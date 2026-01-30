@@ -36,11 +36,16 @@ This is my implementation of MapReduce model in Go following the paper and the l
 2. **Worker**
    - **Map**:
      - Produce the intermediate key/value pair from input key/value pair
+     - Completed map task will be re-executed on failure as their output is stored on the local disk of the failed machines and is therefore inaccessible.
+     - Intermediate piece should be sorted by key
    - **Reduce**:
      - A reduce worker cannot start while a map worker is still in progress
+     - Completed output are stored in a global file system, in case of failure, re-execution is not needed.
+   - **Straggler**, this are workers that has slow performance compared to other workers. The master will create a backup task based on the remaining task and schedule it to other healthy workers. The task will marked as completed either the primary or the backup completed.
 
 3. Helper
-   - For splitting the data
+   - **Partition Function**, helps with the dividing the task in a fairly well-balanced partitions. Default partition function uses hashing on key `hash(key) mod R`, but, other variations are used as well.
+   - **Combiner Function**(optional), does a partial merging of intermediate data. Typically same code is use to implement this function, differs only with show the output is handled.
 
 ### Thoughts
 
