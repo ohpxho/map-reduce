@@ -22,3 +22,5 @@ out/
 
 # Secrets
 .env
+
+.DS_Store
